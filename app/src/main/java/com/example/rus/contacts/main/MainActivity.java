@@ -140,7 +140,7 @@ public class MainActivity extends AppCompatActivity implements ContactsAdapter.O
 
     @Override
     public void onLongItemClick(Contact contact) {
-        repository.deleteContact(contact.getUri());
+        repository.deleteContact(contact);
         rvContacts.setAdapter(new ContactsAdapter(repository.getContacts(), MainActivity.this));
     }
 }

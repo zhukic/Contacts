@@ -163,12 +163,28 @@ public class Repository {
         }
     }
 
-    public void deleteContact(String uri) {
-        contentResolver.delete(getUriWithSyncAdapterParameter(Uri.parse(uri)), null, null);
+    public void deleteContact(Contact contact) {
+        Cursor cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.NUMBER + "=?", new String[]{contact.getPhone()}, null);
+        Long rawId = -1L;
+        if (cursor.moveToFirst()) {
+            rawId = cursor.getLong(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.RAW_CONTACT_ID));
+        }
+        cursor.close();
+        if (rawId != -1) {
+            contentResolver.delete(getUriWithSyncAdapterParameter(Uri.withAppendedPath(ContactsContract.RawContacts.CONTENT_URI, String.valueOf(rawId))), null, null);
+        }
     }
 
     public void editContact(Contact contact) {
-        Long rawId = ContentUris.parseId(Uri.parse(contact.getUri()));
+        Cursor cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.NUMBER + "=?", new String[]{contact.getPhone()}, null);
+        Long rawId = -1L;
+        if (cursor.moveToFirst()) {
+            rawId = cursor.getLong(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.RAW_CONTACT_ID));
+        }
+        cursor.close();
+        if (rawId == -1) {
+            return;
+        }
         ArrayList<ContentProviderOperation> cpo = new ArrayList<>();
 
         cpo.add(ContentProviderOperation.newUpdate(getUriWithSyncAdapterParameter(ContactsContract.Data.CONTENT_URI))

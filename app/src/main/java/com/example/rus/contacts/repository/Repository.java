@@ -20,6 +20,7 @@ import java.util.List;
  */
 
 public class Repository {
+    private static final String MIMETYPE = "vnd.android.cursor.item/vnd.by.idiscount.businesscard";
 
     private ContentResolver contentResolver;
 
